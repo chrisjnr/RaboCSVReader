@@ -9,8 +9,13 @@ class FileDownloadUseCaseImpl(
 
     override suspend fun downloadFile(fileUrl: String, fileName: String): Result<File> {
         val inputStream = fileDownloadRepository.getFile(fileUrl, fileName)
-        return inputStream?.let {
-            fileOperations.saveFile(inputStream, fileName)
-        } ?: Result.createFailure(Throwable("Failed to download csv"))
+        return inputStream.fold(
+            onSuccess = {
+                return@fold fileOperations.saveFile(it, fileName)
+            },
+            onError = {
+                return@fold Result.createFailure(it)
+            }
+        )
     }
 }
