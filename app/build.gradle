@@ -74,4 +74,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     implementation "androidx.recyclerview:recyclerview:1.4.0"
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayout")
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'com.google.android.material:material:1.9.0'
 }

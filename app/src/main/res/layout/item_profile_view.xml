@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginTop="8dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivUserImage"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvFullNamelbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Full Name"
+        app:layout_constraintStart_toEndOf="@id/ivUserImage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvFullName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/tvFullNamelbl"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Santiago Cumberbatch" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDoblbl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Date of Birth"
+        app:layout_constraintStart_toEndOf="@id/ivUserImage"
+        app:layout_constraintTop_toBottomOf="@id/tvFullName" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDob"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/tvDoblbl"
+        app:layout_constraintTop_toBottomOf="@id/tvFullName"
+        tools:text="12 Dec 2024" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvIssueNolbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="No. Of Issues"
+        app:layout_constraintStart_toEndOf="@id/ivUserImage"
+        app:layout_constraintTop_toBottomOf="@id/tvDoblbl" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvIssueNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/tvIssueNolbl"
+        app:layout_constraintTop_toBottomOf="@id/tvDoblbl"
+        tools:text="39" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
