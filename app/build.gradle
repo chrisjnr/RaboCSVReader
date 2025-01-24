@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: '../dependencies.gradle'
+
 android {
     namespace 'com.example.rabocsvreader'
     compileSdk 34
@@ -66,5 +68,7 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.6")
     implementation( project(":domain"))
     implementation(project(":data"))
+    implementation(project(":core"))
     implementation ('com.squareup.retrofit2:retrofit:2.11.0')
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
 }
