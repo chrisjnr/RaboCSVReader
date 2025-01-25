@@ -18,8 +18,11 @@ class MainViewModel(
 
     fun getFileDownload() {
         viewModelScope.launch(Dispatchers.IO) {
+            setState {
+                copy(isLoading = true)
+            }
             fileDownloadUseCase.downloadFile(
-                "https://raw.githubusercontent.com/RabobankDev/AssignmentCSV/main/issues.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjy4ueh-wbIoUIlKu-Sf7ByRyny5tJKocbGdOj1_wQDwRf4vSqGBGdqsPw6Ase1KMEsRgQSJVYhGz3/pub?output=csv",
                 "issues.csv"
             ).fold(
                 onSuccess = {
@@ -39,6 +42,7 @@ class MainViewModel(
         if (!file.exists()) {
             MainScreenEffect.Error("File does not exist: ${file.path}")
         }
+        var errors = 0
         try {
             file.bufferedReader().useLines { lines ->
                 val iterator = lines.iterator()
@@ -65,20 +69,21 @@ class MainViewModel(
 
                         if (batch.size == BATCH_SIZE) {
                             setState {
-                                copy(peopleList = batch)
+                                copy(peopleList = batch, isLoading = false)
                             }
                             batch.clear()
                         }
                     } catch (e: Exception) {
-                        sendEffect(
-                            MainScreenEffect.Error("Error in parsing File")
-                        )
+                        errors++
+                        setState {
+                            copy(isLoading = false, errorCount = errors)
+                        }
                     }
                 }
 
                 if (batch.isNotEmpty()) {
                     setState {
-                        copy(peopleList = batch)
+                        copy(peopleList = batch, isLoading = false)
                     }
                 }
             }
@@ -86,6 +91,9 @@ class MainViewModel(
             sendEffect(
                 MainScreenEffect.Error("Error in parsing File")
             )
+            setState {
+                copy(isLoading = false)
+            }
         }
     }
 
@@ -96,7 +104,7 @@ class MainViewModel(
     }
 
     override fun createInitialState(): MainScreenState {
-        return MainScreenState(true, emptyList())
+        return MainScreenState(true, emptyList(), 0)
     }
 
     override fun handleEvent(event: MainScreenEvent) {
