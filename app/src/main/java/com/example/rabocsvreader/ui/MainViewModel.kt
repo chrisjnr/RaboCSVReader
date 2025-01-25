@@ -1,26 +1,27 @@
 package com.example.rabocsvreader.ui
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.mvi.BaseViewModel
 import com.example.domain.FileDownloadUseCase
 import com.example.domain.fold
 import com.example.rabocsvreader.ui.models.Person
-import com.example.rabocsvreader.ui.vm.MainScreenEffect
-import com.example.rabocsvreader.ui.vm.MainScreenEvent
 import com.example.rabocsvreader.ui.vm.MainScreenState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
 class MainViewModel(
     private val fileDownloadUseCase: FileDownloadUseCase
-) : BaseViewModel<MainScreenState, MainScreenEffect, MainScreenEvent>() {
+) : ViewModel() {
+
+    private val _uiStateFlow = MutableSharedFlow<MainScreenState>(replay = 1)
+    val uiStateFlow: SharedFlow<MainScreenState> = _uiStateFlow
 
     fun getFileDownload() {
         viewModelScope.launch(Dispatchers.IO) {
-            setState {
-                copy(isLoading = true)
-            }
+            _uiStateFlow.emit(MainScreenState.Loading(true))
             fileDownloadUseCase.downloadFile(
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjy4ueh-wbIoUIlKu-Sf7ByRyny5tJKocbGdOj1_wQDwRf4vSqGBGdqsPw6Ase1KMEsRgQSJVYhGz3/pub?output=csv",
                 "issues.csv"
@@ -29,19 +30,20 @@ class MainViewModel(
                     parseCsvManually(it)
                 },
                 onError = {
-                    sendEffect(
-                        MainScreenEffect.Error("Error in saving File")
-                    )
+                    _uiStateFlow.emit(MainScreenState.ShowError("${it.message}"))
+                    _uiStateFlow.emit(MainScreenState.Loading(false))
                 }
             )
         }
     }
 
-
-    private fun parseCsvManually(file: File) {
+    private suspend fun parseCsvManually(file: File) {
         if (!file.exists()) {
-            MainScreenEffect.Error("File does not exist: ${file.path}")
+            _uiStateFlow.emit(MainScreenState.ShowError("File does not exist: ${file.path}"))
+            _uiStateFlow.emit(MainScreenState.Loading(false))
+            return
         }
+
         var errors = 0
         try {
             file.bufferedReader().useLines { lines ->
@@ -68,47 +70,28 @@ class MainViewModel(
                         }
 
                         if (batch.size == BATCH_SIZE) {
-                            setState {
-                                copy(peopleList = batch, isLoading = false)
-                            }
+                            _uiStateFlow.emit(MainScreenState.PeopleListUpdated(batch.toList()))
                             batch.clear()
                         }
                     } catch (e: Exception) {
                         errors++
-                        setState {
-                            copy(isLoading = false, errorCount = errors)
-                        }
+                        _uiStateFlow.emit(MainScreenState.ParsingError(errors))
                     }
                 }
 
                 if (batch.isNotEmpty()) {
-                    setState {
-                        copy(peopleList = batch, isLoading = false)
-                    }
+                    _uiStateFlow.emit(MainScreenState.PeopleListUpdated(batch.toList()))
                 }
             }
         } catch (e: Exception) {
-            sendEffect(
-                MainScreenEffect.Error("Error in parsing File")
-            )
-            setState {
-                copy(isLoading = false)
-            }
+            _uiStateFlow.emit(MainScreenState.ShowError("Error during file parsing: ${e.message}"))
+        } finally {
+            _uiStateFlow.emit(MainScreenState.Loading(false))
         }
     }
 
-
     companion object {
         const val EXPECTED_FIELD_SIZE = 5
-        const val BATCH_SIZE = 100
+        const val BATCH_SIZE = 20
     }
-
-    override fun createInitialState(): MainScreenState {
-        return MainScreenState(true, emptyList(), 0)
-    }
-
-    override fun handleEvent(event: MainScreenEvent) {
-
-    }
-
 }
