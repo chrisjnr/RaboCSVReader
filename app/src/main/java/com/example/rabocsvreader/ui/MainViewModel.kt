@@ -2,6 +2,7 @@ package com.example.rabocsvreader.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.utils.getFileName
 import com.example.core.utils.parseStringToLocalDateTime
 import com.example.domain.FileDownloadUseCase
 import com.example.domain.fold
@@ -20,12 +21,12 @@ class MainViewModel(
     private val _uiStateFlow = MutableSharedFlow<MainScreenState>(replay = 1)
     val uiStateFlow: SharedFlow<MainScreenState> = _uiStateFlow
 
-    fun getFileDownload() {
+    fun getFileDownload(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiStateFlow.emit(MainScreenState.Loading(true))
             fileDownloadUseCase.downloadFile(
-                "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjy4ueh-wbIoUIlKu-Sf7ByRyny5tJKocbGdOj1_wQDwRf4vSqGBGdqsPw6Ase1KMEsRgQSJVYhGz3/pub?output=csv",
-                "issues.csv"
+                url,
+                getFileName(url)
             ).fold(
                 onSuccess = {
                     parseCsvManually(it)

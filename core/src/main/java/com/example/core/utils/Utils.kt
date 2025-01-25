@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import java.net.URL
 
 fun Context.isOnline(): Boolean {
     val connectivityManager =
@@ -59,3 +60,21 @@ fun formatLocalDateToString(localDate: LocalDateTime?): String {
     val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
     return localDate?.format(formatter)?:""
 }
+
+fun getFileName(urlString: String): String {
+    val defaultName = "file_download.csv"
+    return try {
+        val lastPart = URL(urlString).path.substringAfterLast("/")
+        when {
+            lastPart.isEmpty() -> defaultName
+            lastPart.contains(".") -> {
+                val extension = lastPart.substringAfterLast(".")
+                if (extension == "csv") lastPart else "${lastPart.substringBeforeLast(".")}.csv"
+            }
+            else -> "$lastPart.csv"
+        }
+    } catch (e: Exception) {
+        defaultName
+    }
+}
+
