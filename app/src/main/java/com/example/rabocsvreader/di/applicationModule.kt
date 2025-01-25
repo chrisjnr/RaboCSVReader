@@ -1,7 +1,7 @@
-package com.example.rabocsvreader.ui.di
+package com.example.rabocsvreader.di
 
 import com.example.domain.FileOperations
-import com.example.rabocsvreader.ui.MainViewModel
+import com.example.rabocsvreader.ui.vm.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

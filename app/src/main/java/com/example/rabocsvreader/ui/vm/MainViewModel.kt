@@ -1,4 +1,4 @@
-package com.example.rabocsvreader.ui
+package com.example.rabocsvreader.ui.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +7,6 @@ import com.example.core.utils.parseStringToLocalDateTime
 import com.example.domain.FileDownloadUseCase
 import com.example.domain.fold
 import com.example.rabocsvreader.ui.models.Person
-import com.example.rabocsvreader.ui.vm.MainScreenState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

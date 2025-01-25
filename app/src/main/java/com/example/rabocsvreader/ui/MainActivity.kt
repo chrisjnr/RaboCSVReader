@@ -9,6 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rabocsvreader.databinding.ActivityMainBinding
 import com.example.rabocsvreader.ui.vm.MainScreenState
+import com.example.rabocsvreader.ui.vm.MainViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 

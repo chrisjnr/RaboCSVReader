@@ -1,4 +1,4 @@
-package com.example.rabocsvreader.ui.di
+package com.example.rabocsvreader.di
 
 import android.content.Context
 import android.util.Log
