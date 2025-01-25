@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Full Name"
+        android:text="@string/main_screen_full_name_lbl"
         app:layout_constraintStart_toEndOf="@id/ivUserImage"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Date of Birth"
+        android:text="@string/main_screen_date_of_birth_lbl"
         app:layout_constraintStart_toEndOf="@id/ivUserImage"
         app:layout_constraintTop_toBottomOf="@id/tvFullName" />
 
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="No. Of Issues"
+        android:text="@string/main_screen_no_of_issues_lbl"
         app:layout_constraintStart_toEndOf="@id/ivUserImage"
         app:layout_constraintTop_toBottomOf="@id/tvDoblbl" />
 
