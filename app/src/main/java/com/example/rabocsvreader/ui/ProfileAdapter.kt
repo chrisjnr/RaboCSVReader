@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.core.utils.formatLocalDateToString
+import com.example.rabocsvreader.R
 import com.example.rabocsvreader.databinding.ItemProfileViewBinding
 import com.example.rabocsvreader.ui.models.Person
 
@@ -29,9 +31,8 @@ internal class ProfileAdapter(
             Glide.with(root.context).load(person.avatar).into(
                 ivUserImage
             )
-            // TODO: format both
-            tvDob.text = person.dob
-            tvFullName.text = "${person.firstName} ${person.surname}"
+            tvDob.text = formatLocalDateToString(person.dob)
+            tvFullName.text = root.context.getString(R.string.main_screen_full_name, person.firstName, person.surname)
             tvIssueNo.text = person.issueCount.toString()
 
         }

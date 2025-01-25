@@ -2,6 +2,7 @@ package com.example.rabocsvreader.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.utils.parseStringToLocalDateTime
 import com.example.domain.FileDownloadUseCase
 import com.example.domain.fold
 import com.example.rabocsvreader.ui.models.Person
@@ -63,7 +64,7 @@ class MainViewModel(
                                     firstName = fields[0],
                                     surname = fields[1],
                                     issueCount = fields[2].toInt(),
-                                    dob = fields[3],
+                                    dob = parseStringToLocalDateTime(fields[3]),
                                     avatar = fields[4]
                                 )
                             )
