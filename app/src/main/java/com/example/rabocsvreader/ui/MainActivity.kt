@@ -8,18 +8,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rabocsvreader.databinding.ActivityMainBinding
-import com.example.rabocsvreader.ui.vm.MainScreenState
+import com.example.rabocsvreader.ui.vm.MainScreenEffect
 import com.example.rabocsvreader.ui.vm.MainViewModel
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private const val TAG = "RABO_TEST"
 
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by inject()
+    private val viewModel: MainViewModel by viewModel()
     private val profileAdapter = ProfileAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getFileDownload("https://docs.google.com/spreadsheets/d/e/2PACX-1vSjy4ueh-wbIoUIlKu-Sf7ByRyny5tJKocbGdOj1_wQDwRf4vSqGBGdqsPw6Ase1KMEsRgQSJVYhGz3/pub?output=csv")
         setupUI()
         collectState()
+        collectEffect()
     }
 
     private fun setupUI() = binding.rvProfiles.apply {
@@ -39,22 +41,25 @@ class MainActivity : AppCompatActivity() {
     private fun collectState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.uiStateFlow.collect { uiState ->
-                    when (uiState) {
-                        is MainScreenState.Loading -> {
-                            binding.pbLoading.isVisible = uiState.loading
+                viewModel.uiListState.collectLatest { uiState ->
+                    profileAdapter.submitList(uiState.peopleList)
+                    binding.tvNoOfErrors.text = uiState.errorCount.toString()
+                }
+            }
+        }
+    }
+
+    private fun collectEffect() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.uiEffect.collect { uiEffect ->
+                    when (uiEffect) {
+                        is MainScreenEffect.Loading -> {
+                            binding.pbLoading.isVisible = uiEffect.loading
                         }
 
-                        is MainScreenState.ShowError -> {
-
-                        }
-
-                        is MainScreenState.PeopleListUpdated -> {
-                            profileAdapter.updateList(uiState.people)
-                        }
-
-                        is MainScreenState.ParsingError -> {
-                            binding.tvNoOfErrors.text = uiState.errorCount.toString()
+                        is MainScreenEffect.ShowError -> {
+                            Snackbar.make(binding.root, uiEffect.message, Snackbar.LENGTH_SHORT).show()
                         }
                     }
                 }

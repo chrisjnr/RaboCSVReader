@@ -9,7 +9,10 @@ import com.example.domain.fold
 import com.example.rabocsvreader.ui.models.Person
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -17,12 +20,15 @@ class MainViewModel(
     private val fileDownloadUseCase: FileDownloadUseCase
 ) : ViewModel() {
 
-    private val _uiStateFlow = MutableSharedFlow<MainScreenState>(replay = 1)
-    val uiStateFlow: SharedFlow<MainScreenState> = _uiStateFlow
+    private val _uiEffect = MutableSharedFlow<MainScreenEffect>(replay = 1)
+    val uiEffect: SharedFlow<MainScreenEffect> = _uiEffect
+
+    private val _uiListState= MutableStateFlow(MainScreenState(emptyList(), 0))
+    val uiListState: StateFlow<MainScreenState> = _uiListState
 
     fun getFileDownload(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiStateFlow.emit(MainScreenState.Loading(true))
+            _uiEffect.emit(MainScreenEffect.Loading(true))
             fileDownloadUseCase.downloadFile(
                 url,
                 getFileName(url)
@@ -31,8 +37,8 @@ class MainViewModel(
                     parseCsvManually(it)
                 },
                 onError = {
-                    _uiStateFlow.emit(MainScreenState.ShowError("${it.message}"))
-                    _uiStateFlow.emit(MainScreenState.Loading(false))
+                    _uiEffect.emit(MainScreenEffect.ShowError("${it.message}"))
+                    _uiEffect.emit(MainScreenEffect.Loading(false))
                 }
             )
         }
@@ -40,8 +46,8 @@ class MainViewModel(
 
     private suspend fun parseCsvManually(file: File) {
         if (!file.exists()) {
-            _uiStateFlow.emit(MainScreenState.ShowError("File does not exist: ${file.path}"))
-            _uiStateFlow.emit(MainScreenState.Loading(false))
+            _uiEffect.emit(MainScreenEffect.ShowError("File does not exist: ${file.path}"))
+            _uiEffect.emit(MainScreenEffect.Loading(false))
             return
         }
 
@@ -71,24 +77,37 @@ class MainViewModel(
                         }
 
                         if (batch.size == BATCH_SIZE) {
-                            _uiStateFlow.emit(MainScreenState.PeopleListUpdated(batch.toList()))
+                            _uiListState.updateState(batch, errors)
                             batch.clear()
                         }
                     } catch (e: Exception) {
                         errors++
-                        _uiStateFlow.emit(MainScreenState.ParsingError(errors))
+                        _uiListState.updateState(batch, errors)
+                        batch.clear()
                     }
                 }
 
                 if (batch.isNotEmpty()) {
-                    _uiStateFlow.emit(MainScreenState.PeopleListUpdated(batch.toList()))
+                    _uiListState.updateState(batch, errors)
                 }
             }
         } catch (e: Exception) {
-            _uiStateFlow.emit(MainScreenState.ShowError("Error during file parsing: ${e.message}"))
+            _uiEffect.emit(MainScreenEffect.ShowError("Error during file parsing: ${e.message}"))
         } finally {
-            _uiStateFlow.emit(MainScreenState.Loading(false))
+            _uiEffect.emit(MainScreenEffect.Loading(false))
         }
+    }
+
+
+    private fun MutableStateFlow<MainScreenState>.updateState(
+        batch: List<Person>,
+        errors: Int
+    ) {
+        val list = mutableListOf<Person>().apply {
+            addAll(_uiListState.value.peopleList)
+            addAll(batch)
+        }
+        update { MainScreenState(list, errors) }
     }
 
     companion object {
