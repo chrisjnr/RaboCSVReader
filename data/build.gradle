@@ -12,8 +12,15 @@ java {
 
 dependencies {
     implementation( project(":domain"))
+    testImplementation(project(":core"))
     implementation ('com.squareup.retrofit2:retrofit:2.11.0')
     implementation("io.insert-koin:koin-core:4.0.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    testImplementation "io.mockk:mockk:1.13.16"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+    testImplementation("junit:junit:4.13.2")
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2"
+
 }
