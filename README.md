@@ -1,6 +1,6 @@
 # RaboCSVReader Assignment
 
-## CSV Reader App
+## CSV Reader App[![Android CI](https://github.com/chrisjnr/RaboCSVReader/actions/workflows/android.yml/badge.svg)](https://github.com/chrisjnr/RaboCSVReader/actions/workflows/android.yml)
 
 This is a sample app to parse a CSV file from an internet source, process its contents, and handle data conversion in a Kotlin-based Android project. The app focuses on implementing a custom CSV parser, ensuring the use of proper data types (String, Integer, Date), and adhering to basic Android and Kotlin principles. UI and unit test cases exist for all usecases and methods used in this project.
 
