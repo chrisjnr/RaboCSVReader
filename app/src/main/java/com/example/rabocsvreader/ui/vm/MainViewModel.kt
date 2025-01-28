@@ -38,7 +38,6 @@ class MainViewModel(
                 },
                 onError = {
                     _uiEffect.emit(MainScreenEffect.ShowError("${it.message}"))
-                    _uiEffect.emit(MainScreenEffect.Loading(false))
                 }
             )
         }
@@ -47,7 +46,6 @@ class MainViewModel(
     private suspend fun parseCsvManually(file: File) {
         if (!file.exists()) {
             _uiEffect.emit(MainScreenEffect.ShowError("File does not exist: ${file.path}"))
-            _uiEffect.emit(MainScreenEffect.Loading(false))
             return
         }
 
@@ -67,11 +65,11 @@ class MainViewModel(
                         if (fields.size == EXPECTED_FIELD_SIZE) {
                             batch.add(
                                 Person(
-                                    firstName = fields[0],
-                                    surname = fields[1],
+                                    firstName = fields[0].trim(),
+                                    surname = fields[1].trim(),
                                     issueCount = fields[2].toInt(),
                                     dob = parseStringToLocalDateTime(fields[3]),
-                                    avatar = fields[4]
+                                    avatar = fields[4].trim()
                                 )
                             )
                         }

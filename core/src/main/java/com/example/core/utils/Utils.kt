@@ -1,36 +1,11 @@
 package com.example.core.utils
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.net.URL
 
-fun Context.isOnline(): Boolean {
-    val connectivityManager =
-        getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    if (connectivityManager != null) {
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                    return true
-                }
 
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                    return true
-                }
-
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                    return true
-                }
-            }
-        }
-    }
-    return false
-}
 
 fun parseStringToLocalDateTime(dateValue: String): LocalDateTime? {
     val commonFormats = listOf(
@@ -51,8 +26,18 @@ fun parseStringToLocalDateTime(dateValue: String): LocalDateTime? {
         }
     }
 
-    return detectedFormatter?.let { format ->
-        LocalDateTime.parse(dateValue, DateTimeFormatter.ofPattern(format))
+    return try {
+        detectedFormatter?.let { format ->
+            LocalDateTime.parse(dateValue, DateTimeFormatter.ofPattern(format))
+        }
+    } catch (e: Exception) {
+        try {
+            detectedFormatter?.let { format ->
+                LocalDate.parse(dateValue, DateTimeFormatter.ofPattern(format))
+            }?.atStartOfDay()
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 

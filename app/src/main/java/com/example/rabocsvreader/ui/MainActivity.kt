@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rabocsvreader.databinding.ActivityMainBinding
+import com.example.rabocsvreader.ui.util.isOnline
 import com.example.rabocsvreader.ui.vm.MainScreenEffect
 import com.example.rabocsvreader.ui.vm.MainViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -27,7 +28,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel.getFileDownload("https://docs.google.com/spreadsheets/d/e/2PACX-1vSjy4ueh-wbIoUIlKu-Sf7ByRyny5tJKocbGdOj1_wQDwRf4vSqGBGdqsPw6Ase1KMEsRgQSJVYhGz3/pub?output=csv")
+        if (isOnline()) {
+            viewModel.getFileDownload("https://raw.githubusercontent.com/RabobankDev/AssignmentCSV/main/issues.csv")
+        } else {
+            Snackbar.make(binding.root,"No Internet connection", Snackbar.LENGTH_SHORT).show()
+
+        }
         setupUI()
         collectState()
         collectEffect()
@@ -60,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
                         is MainScreenEffect.ShowError -> {
                             Snackbar.make(binding.root, uiEffect.message, Snackbar.LENGTH_SHORT).show()
+                            binding.pbLoading.isVisible = false
                         }
                     }
                 }
